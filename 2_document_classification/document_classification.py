@@ -51,17 +51,14 @@ def run(mini_batch):
     
 def classify_document(png_file_path):
     # run Custom Vision model to identify form type
-    start_time = time.time()
     im = Image.open(png_file_path)
     cv_results = custom_vision_helper_SDK.predict_form(im)
-    runtime = round(time.time() - start_time,2)
-    print(f"   > classify_form, item: ({item_info}) -> Custom Vision execution: {runtime} seconds")
-    
+   
     image_file_name = os.path.basename(png_file_path)
     json_file_name = os.path.splitext(image_file_name)[0]+'.json'
-    
+
     classified_document = {"id": pdf_name+'-'+pdf_page_number, "pdf_name": pdf_name, "pdf_page_number": pdf_page_number, "image_file_name" : image_file_name, "classification": cv_results }
     output_file_name = os.path.join(documents_folder, json_file_name)
-        
+       
     with open(output_file_name,'w') as output_file:
         json.dump(classified_document,output_file)
