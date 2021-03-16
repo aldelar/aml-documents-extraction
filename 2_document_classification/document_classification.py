@@ -58,7 +58,7 @@ def classify_document(png_file_path):
     print(f"   > classify_form, item: ({item_info}) -> Custom Vision execution: {runtime} seconds")
     
     image_file_name = os.path.basename(png_file_path)
-    json_file_name = os.path.split(image_file_name)[0]+'.json'
+    json_file_name = os.path.splitext(image_file_name)[0]+'.json'
     
     classified_document = {"id": pdf_name+'-'+pdf_page_number, "pdf_name": pdf_name, "pdf_page_number": pdf_page_number, "image_file_name" : image_file_name, "classification": cv_results }
     output_file_name = os.path.join(documents_folder, json_file_name)
