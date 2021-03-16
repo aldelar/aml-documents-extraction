@@ -44,11 +44,11 @@ def run(mini_batch):
 #
 def pdf_to_png(pdf_file_path):
     images = convert_from_path(pdf_file_path) #images is a list of each page of PDF as an image
-    pdf_file_name = os.path.split(os.path.basename(pdf_file_path))[0]
+    pdf_file_name_no_ext = os.path.splitext(os.path.basename(pdf_file_path))[0]
     page_num = 1
     for image in images:
-        png_name = os.path.join(png_folder,pdf_file_name+'_p'+str(page_num)+'.png')
-        image.save(png_name)
-        log = f"==> pdf_to_png convert({pdf_file_name}) -> page #{page_num}"
-        logger.info(log)
+        png_file_name = pdf_file_name_no_ext + '_p' + str(page_num) + '.png'
+        png_file_path = os.path.join(png_folder,png_file_name)
+        image.save(png_file_path)
+        logger.info(f"==> pdf_to_png convert({pdf_file_name_no_ext}.pdf) -> page #{page_num} = {png_file_name}")
         page_num += 1
