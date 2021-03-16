@@ -6,6 +6,8 @@ dependencies:
 - poppler
 - pip:
   - azure-cosmos
+  - azure-cognitiveservices-vision-customvision
+  - azure-ai-formrecognizer
   - azureml-core
   - azureml-dataprep[fuse]
   - azureml-defaults

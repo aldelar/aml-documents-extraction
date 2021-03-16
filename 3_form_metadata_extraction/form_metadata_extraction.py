@@ -1,10 +1,14 @@
 from azureml_user.parallel_run import EntryScript
 from azureml.core import Run
 from azure.cosmos import CosmosClient
+
+import argparse
 import json
-import form_recognizer_helper_SDK
+import os
 
 from PIL import Image
+
+import form_recognizer_helper_SDK
 
 #
 def init():

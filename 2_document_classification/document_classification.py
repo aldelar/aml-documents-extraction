@@ -1,10 +1,13 @@
 from azureml_user.parallel_run import EntryScript
 from azureml.core import Run
-from . import custom_vision_helper_SDK
 
+import argparse
+import os
 import time
 import json
 from PIL import Image
+
+import custom_vision_helper_SDK
 
 #
 def init():
@@ -47,11 +50,9 @@ def classify_document(png_file_path):
     print(f"   > classify_form, item: ({item_info}) -> Custom Vision execution: {runtime} seconds")
     
     image_file_name = os.path.basename(png_file_path)
-
-    classified_document = {"id": pdf_name+'-'+pdf_page_number, "pdf_name": pdf_name, "pdf_page_number": pdf_page_number, "image_file_name" : image_file_name, "classification": cv_results }
+    json_file_name = os.path.split(image_file_name)[0]+'.json'
     
-    json_file_name = os.path.join(os.path.split(image_file_name)[0],'.json')
-        
+    classified_document = {"id": pdf_name+'-'+pdf_page_number, "pdf_name": pdf_name, "pdf_page_number": pdf_page_number, "image_file_name" : image_file_name, "classification": cv_results }
     output_file_name = os.path.join(documents_folder, json_file_name)
         
     with open(output_file_name,'w') as output_file:

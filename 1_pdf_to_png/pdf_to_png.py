@@ -3,6 +3,9 @@ from azureml_user.parallel_run import EntryScript
 #this may require installation of poppler https://github.com/Belval/pdf2image
 from pdf2image import convert_from_path
 
+import argparse
+import os
+
 #
 def init():
 
@@ -21,7 +24,7 @@ def init():
 #
 def run(mini_batch):
     
-    logger.info("==> pdf_to_png run({}).".format(mini_batch))
+    logger.info("==> pdf_to_png run({})".format(mini_batch))
     
     results = []
     for pdf_file_path in mini_batch:
@@ -33,8 +36,11 @@ def run(mini_batch):
 #
 def pdf_to_png(pdf_file_path):
     images = convert_from_path(pdf_file_path) #images is a list of each page of PDF as an image
+    pdf_file_name = os.path.split(os.path.basename(pdf_file_path))[0]
+    logger.info("==> pdf_to_png convert_from_path({})".format(pdf_file_name))
     page_num = 1
     for image in images:
-        png_name = os.path.join(png_folder,os.path.split(os.path.basename(pdf_file_path))[0],'_',str(page_num),'.png')
+        png_name = os.path.join(png_folder,pdf_file_name+'_p'+str(page_num)+'.png')
         image.save(png_name)
+        logger.info("==> pdf_to_png convert_from_path() -> page #{}".format(page_num))
         page_num += 1
