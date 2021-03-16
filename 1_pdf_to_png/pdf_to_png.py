@@ -49,5 +49,6 @@ def pdf_to_png(pdf_file_path):
     for image in images:
         png_name = os.path.join(png_folder,pdf_file_name+'_p'+str(page_num)+'.png')
         image.save(png_name)
-        logger.info(f"==> pdf_to_png convert({pdf_file_name}) -> page #{page_num}")
+        log = f"==> pdf_to_png convert({pdf_file_name}) -> page #{page_num}"
+        logger.info(log)
         page_num += 1
