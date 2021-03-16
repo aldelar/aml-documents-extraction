@@ -6,13 +6,18 @@ from PIL import Image
 from io import BytesIO
 
 def init(keyvault):
-    global prediction_credentials
+    
+    global cv_project_id
+    global cv_iteration_published_name
+    global ocr_url
+    global headers
+    global params
     global predictor
     
     # custom vision project
     cv_project_id = keyvault.get_secret(name='CUSTOM-VISION-PROJECT-ID')
     cv_iteration_published_name = keyvault.get_secret(name='CUSTOM-VISION-ITERATION-PUBLISHED-NAME')
-
+  
     # initialize client
     endpoint = keyvault.get_secret(name='COGNITIVE-SERVICES-ENDPOINT')
     ocr_url  = endpoint + "vision/v2.1/ocr"

@@ -4,9 +4,8 @@ from azure.ai.formrecognizer import FormRecognizerClient, FormRecognizerApiVersi
 import os
 
 def init(keyvault):
+    
     global form_recognizer_client
-
-    keyvault.get_secret(name="secret-name")
     
     # initialize client
     endpoint   = keyvault.get_secret(name='FORM-RECOGNIZER-ENDPOINT')
