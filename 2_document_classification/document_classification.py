@@ -25,7 +25,7 @@ def init():
     documents_folder = args.documents_folder
     print("documents_folder:", documents_folder)
     
-    ws = Run.get_context().workspace
+    ws = Run.get_context().experiment.workspace
     keyvault = ws.get_default_keyvault()
     custom_vision_helper_SDK.init(keyvault)
 
@@ -35,10 +35,18 @@ def run(mini_batch):
     logger.info("==> document_classification run({}).".format(mini_batch))
     
     results = []
-    for png_file_path in mini_batch:
-        classify_document(png_file_path)
-        results.append(png_file_path)
-        
+
+    for file_path in mini_batch:
+        file_name = os.path.split(file_path)[1]
+        file_extension = os.path.splitext(file_name)[1]
+        result = file_name + ','
+        if file_extension == '.png':
+            classify_document(file_path)
+            result += "classified"
+        else:
+            result += "skipped"
+        results.append(result)
+
     return results
     
 def classify_document(png_file_path):

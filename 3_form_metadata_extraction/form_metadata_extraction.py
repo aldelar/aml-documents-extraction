@@ -31,7 +31,7 @@ def init():
     print("png_folder:", png_folder)
     print("metadata_folder:", metadata_folder)
     
-    ws = Run.get_context().workspace
+    ws = Run.get_context().experiment.workspace
     keyvault = ws.get_default_keyvault()
     form_recognizer_helper_SDK.init(keyvault)
     
@@ -51,16 +51,23 @@ def run(mini_batch):
     logger.info("==> form_metadata_extraction run({}).".format(mini_batch))
     
     results = []
-    for form_json_path in mini_batch:
-        form_json = json.load(form_json_path)
-        image_file_name = form_json['image_file_name']
-        top1_prediction = form_json['classification'][0]['tag_name']
-        results.append(image_file_name + ',' + top1_prediction)
-        
-        if(top1_prediction != 'other_docs'):
-            model_id = mapping[top1_prediction]
-            recognize_form(image_file_name,model_id,form_json['id'])
-        
+    
+    for file_path in mini_batch:
+        file_name = os.path.split(file_path)[1]
+        file_extension = os.path.splitext(file_name)[1]
+        result = file_name + ','
+        if file_extension == '.json':
+            form_json = json.load(form_json_path)
+            image_file_name = form_json['image_file_name']
+            top1_prediction = form_json['classification'][0]['tag_name']
+            result+ = top1_prediction
+            if(top1_prediction != 'other_docs'):
+                model_id = mapping[top1_prediction]
+                recognize_form(image_file_name,model_id,form_json['id'])
+        else:
+            result+ = 'skipped'
+        results.append(result)
+    
     return results
     
 #
