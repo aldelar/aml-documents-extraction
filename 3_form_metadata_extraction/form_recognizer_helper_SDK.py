@@ -9,8 +9,9 @@ def init(keyvault):
     
     # initialize client
     endpoint   = keyvault.get_secret(name='FORM-RECOGNIZER-ENDPOINT')
-    credential = keyvault.get_secret(name='FORM-RECOGNIZER-SUBSCRIPTION-KEY')
-    form_recognizer_client = FormRecognizerClient(endpoint, credential)
+    credential = AzureKeyCredential(keyvault.get_secret(name='FORM-RECOGNIZER-SUBSCRIPTION-KEY'))
+    api_version = "2.1-preview.2" # TODO: define secret and use this code --> keyvault.get_secret(name='FORM-RECOGNIZER-API-VERSION')
+    form_recognizer_client = FormRecognizerClient(endpoint, credential, api_version=api_version)
 
 # recognize_forms
 def recognize_forms(model_id, form):
@@ -24,12 +25,3 @@ def recognize_forms(model_id, form):
                 recognized_fields.append({ "name": field_name, "type": field.value_type, "text": field.value_data.text, "value": str(field.value), "confidence": field.confidence })
         recognized_output.append({ "form_type": recognized_form.form_type, "fields": recognized_fields})
     return recognized_output
-
-# unit test
-if __name__ == '__main__':
-    for version in FormRecognizerApiVersion:
-        print(f"API Version: {version}")
-    with open("image.png", "rb") as fd:
-        form = fd.read()
-    recognized_output = recognize_forms(model_id="1050d11d-06e5-4ae5-a43c-443c6636f5f5",form=form)
-    print(recognized_output)

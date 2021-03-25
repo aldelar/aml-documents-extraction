@@ -7,7 +7,7 @@ dependencies:
 - pip:
   - azure-cosmos
   - azure-cognitiveservices-vision-customvision
-  - azure-ai-formrecognizer
+  - azure-ai-formrecognizer==3.1.0b3
   - azureml-core
   - azureml-dataprep[fuse]
   - azureml-defaults
@@ -16,3 +16,4 @@ dependencies:
   - azureml-train-core
   - numpy
   - pdf2image
+  - Pillow

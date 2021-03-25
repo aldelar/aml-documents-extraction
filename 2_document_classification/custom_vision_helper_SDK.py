@@ -18,10 +18,12 @@ def init(keyvault):
     cv_project_id = keyvault.get_secret(name='CUSTOM-VISION-PROJECT-ID')
     cv_iteration_published_name = keyvault.get_secret(name='CUSTOM-VISION-ITERATION-PUBLISHED-NAME')
   
-    # initialize client
+    # client endpoint
     endpoint = keyvault.get_secret(name='COGNITIVE-SERVICES-ENDPOINT')
     ocr_url  = endpoint + "vision/v2.1/ocr"
     apim_key = keyvault.get_secret(name='COGNITIVE-SERVICES-SUBSCRIPTION-KEY')
+    
+    # initialize client
     headers = { 'Ocp-Apim-Subscription-Key': apim_key, 'Content-Type': 'application/octet-stream' }
     params = {'language': 'unk', 'detectOrientation': 'true'}
     prediction_credentials = ApiKeyCredentials(in_headers={"Prediction-key": apim_key})
@@ -74,10 +76,3 @@ def predict_form(form):
         predictions_output.append(prediction)
 
     return predictions_output
-
-# unit test
-if __name__ == '__main__':
-    with open("image.png", "rb") as fd:
-        form = fd.read()
-    predictions_output = predict_form(form=form)
-    print(predictions_output)

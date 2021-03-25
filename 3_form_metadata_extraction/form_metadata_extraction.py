@@ -3,10 +3,8 @@ from azureml.core import Run
 from azure.cosmos import CosmosClient
 
 import argparse
-import json
 import os
-
-from PIL import Image
+import json
 
 import form_recognizer_helper_SDK
 
@@ -34,17 +32,18 @@ def init():
     ws = Run.get_context().experiment.workspace
     keyvault = ws.get_default_keyvault()
     form_recognizer_helper_SDK.init(keyvault)
-    
-    url = keyvault.get_secret(name='COSMOSDB-URI')
+
+    # Cosmos
+    uri = keyvault.get_secret(name='COSMOSDB-URI')
     key = keyvault.get_secret(name='COSMOSDB-KEY')
-    cosmos_client = CosmosClient(url, credential=key)
-    
+    cosmos_client = CosmosClient(uri, credential=key)
     database = cosmos_client.get_database_client('curation_docs')
     documents_container = database.get_container_client('documents')
     mappings_container = database.get_container_client('mappings')
 
     for item in mappings_container.query_items(query='SELECT * FROM c WHERE c.id = "form_recognizer_mapping"', enable_cross_partition_query=True):
-        mapping=item
+        mapping=item['mappings']
+
 #
 def run(mini_batch):
     
@@ -57,33 +56,40 @@ def run(mini_batch):
         file_extension = os.path.splitext(file_name)[1]
         result = file_name + ','
         if file_extension == '.json':
-            form_json = json.load(form_json_path)
+            form_json = json.load(open(file_path))
             image_file_name = form_json['image_file_name']
-            top1_prediction = form_json['classification'][0]['tag_name']
-            result+ = top1_prediction
+            classification = form_json['classification']
+            top1_prediction = classification[0]['tag_name']
+            result += top1_prediction
             if(top1_prediction != 'other_docs'):
                 model_id = mapping[top1_prediction]
-                recognize_form(image_file_name,model_id,form_json['id'])
+                form_recognizer_output = recognize_form(image_file_name,model_id)
+                
+                # store form metadata to Cosmos DB
+                cosmosdb_item = {}
+                cosmosdb_item['id'] = form_json['id']
+                cosmosdb_item['pdf_name'] = form_json['pdf_name']
+                cosmosdb_item['pdf_page_number'] = form_json['pdf_page_number']
+                cosmosdb_item['image_file_name'] = image_file_name
+                cosmosdb_item['classification'] = classification
+                cosmosdb_item['forms'] = form_recognizer_output
+                documents_container.upsert_item(cosmosdb_item)
+
+                # save FR output
+                output_file_name = os.path.join(metadata_folder,image_file_name + '.json')
+                with open(output_file_name,'w') as output_file:
+                    json.dump(cosmosdb_item,output_file)
         else:
-            result+ = 'skipped'
+            result += 'skipped'
         results.append(result)
     
     return results
     
 #
-def recognize_form(image_file_name,model_id,document_id):
-    image_file_path = os.join(png_folder,image_file_name)
-    image_data = Image.open(image_file_path, 'r')
-    
-    form_recognizer_output = form_recognizer_helper_SDK.recognize_forms(model_id,image_data)
-    print(f"   > classify_form, item: ({item_info})")
+def recognize_form(image_file_name,model_id):
 
-    # store form metadata to Cosmos DB
-    cosmosdb_item = {}
-    cosmosdb_item['id'] = document_id
-    cosmosdb_item['forms'] = form_recognizer_output
-    documents_container.upsert_item(func.Document.from_json(json.dumps(cosmosdb_item)))
-    
-    output_file_name = os.path.join(metadata_folder,image_file_name + '.json')
-    with open(output_file_name,'w') as output_file:
-        json.dump(cosmosdb_item,output_file)
+    # read image and call FR
+    image_file_path = os.path.join(png_folder,image_file_name)
+    with open(image_file_path, "rb") as image_file:
+        image_data = image_file.read()
+    return form_recognizer_helper_SDK.recognize_forms(model_id,image_data)

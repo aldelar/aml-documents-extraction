@@ -24,7 +24,7 @@ def init():
 #
 def run(mini_batch):
     
-    logger.info("==> pdf_to_png run({})".format(mini_batch))
+    logger.info("==> pdf_to_png run({}).".format(mini_batch))
     
     results = []
 
@@ -43,7 +43,8 @@ def run(mini_batch):
     
 #
 def pdf_to_png(pdf_file_path):
-    images = convert_from_path(pdf_file_path) #images is a list of each page of PDF as an image
+    # TODO: check output image size and render at lower DPI if > max size accepted by subsequent services
+    images = convert_from_path(pdf_file_path,dpi=200) #images is a list of each page of PDF as an image
     pdf_file_name_no_ext = os.path.splitext(os.path.basename(pdf_file_path))[0]
     page_num = 1
     for image in images:
