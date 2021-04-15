@@ -8,9 +8,9 @@ def init(keyvault):
     global form_recognizer_client
     
     # initialize client
-    endpoint   = keyvault.get_secret(name='FORM-RECOGNIZER-ENDPOINT')
-    credential = AzureKeyCredential(keyvault.get_secret(name='FORM-RECOGNIZER-SUBSCRIPTION-KEY'))
-    api_version = "2.1-preview.2" # TODO: define secret and use this code --> keyvault.get_secret(name='FORM-RECOGNIZER-API-VERSION')
+    endpoint   = keyvault.get_secret(name='COGNITIVE-SERVICES-ENDPOINT')
+    credential = AzureKeyCredential(keyvault.get_secret(name='COGNITIVE-SERVICES-SUBSCRIPTION-KEY'))
+    api_version = keyvault.get_secret(name='FORM-RECOGNIZER-API-VERSION')
     form_recognizer_client = FormRecognizerClient(endpoint, credential, api_version=api_version)
 
 # recognize_forms

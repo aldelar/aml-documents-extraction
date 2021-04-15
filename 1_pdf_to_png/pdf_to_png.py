@@ -33,8 +33,12 @@ def run(mini_batch):
         file_extension = os.path.splitext(file_name)[1]
         result = file_name + ','
         if file_extension == '.pdf':
-            pdf_to_png(file_path)
-            result += "converted"
+            try:
+                pdf_to_png(file_path)
+                result += "converted"
+            except Exception as e:
+                result += "failed"
+                raise e
         else:
             result += "skipped"
         results.append(result)

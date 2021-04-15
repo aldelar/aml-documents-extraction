@@ -42,8 +42,12 @@ def run(mini_batch):
         file_extension = os.path.splitext(file_name)[1]
         result = file_name + ','
         if file_extension == '.png':
-            classify_document(file_path)
-            result += "classified"
+            try:
+                classify_document(file_path)
+                result += "classified"
+            except Exception as e:
+                result += "failed"
+                raise e
         else:
             result += "skipped"
         results.append(result)
