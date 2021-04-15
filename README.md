@@ -1,1 +1,1 @@
-# curation-docs-service
+# aml-documents-extraction
