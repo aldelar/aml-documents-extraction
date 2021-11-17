@@ -6,8 +6,8 @@ import argparse
 import os
 import json
 
-#import form_recognizer_helper_SDK
-import form_recognizer_helper_REST
+import form_recognizer_helper_SDK
+#import form_recognizer_helper_REST # consider using the REST api when you need to access the very latest versions of the APIs which may not be rolled into the SDK yet (like a beta version test)
 
 #
 def init():
@@ -98,5 +98,5 @@ def recognize_form(image_file_name,model_id):
     image_file_path = os.path.join(png_folder,image_file_name)
     with open(image_file_path, "rb") as image_file:
         image_data = image_file.read()
-    #return form_recognizer_helper_SDK.recognize_forms(model_id,image_data)
-    return form_recognizer_helper_REST.recognize_forms(model_id,image_data)
+    return form_recognizer_helper_SDK.recognize_forms(model_id,image_data)
+    #return form_recognizer_helper_REST.recognize_forms(model_id,image_data)
