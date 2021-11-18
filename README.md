@@ -48,5 +48,4 @@ You'll need to create a Cosmos DB account, and have 2 containers:
         }
     }
 
-"page-type-1" would be the tag identified as the output of a page going through the Custom Vision step (which identifies for each page of the doc which type of page it is)
-The id associated with that page is the Id of your custom Form Recognizer model to use for that page.
+"page-type-1" would be the tag identified as the output of a page going through the Custom Vision step (which identifies for each page of the doc which type of page it is). The ID associated with that page tag is the ID of your custom Form Recognizer model to use for that page.
